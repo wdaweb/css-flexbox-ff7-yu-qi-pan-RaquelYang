@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC&display=swap" rel="stylesheet">
+  <title>Chinese_chess</title>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      box-sizing: border-box;
+      font-family: 'Noto Serif TC', serif;
+      font-weight: 500;
+    }
+
+    /* 棋盤 */
+    .container {
+      width: 700px;
+      height: 800px;
+      /* background-color: aquamarine; */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid black;
+    }
+
+    .wrap {
+      width: 600px;
+      height: 700px;
+      /* background-color: lemonchiffon; */
+    }
+
+    .chess {
+      width: 100%;
+      height: 43%;
+      /* background-color: lightcoral; */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* 棋盤 border */
+    .chess .row {
+      width: 100%;
+      border-bottom: 1px solid black;
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      ;
+    }
+
+    .chess .row:first-child {
+      border-top: 1px solid black;
+
+    }
+
+    .chess .row .col {
+      border-left: 1px solid black;
+      flex: 1;
+    }
+
+    .chess .row .col:last-child {
+      border-right: 1px solid black;
+    }
+
+    /* 斜線black */
+    .slide_black {
+      position: relative;
+    }
+
+    .slide_black::after {
+      content: '';
+      display: block;
+      width: 210px;
+      /* background-color: red; */
+      border-top: 1px solid black;
+      transform: rotate(45deg);
+      top: 0;
+      left: -30px;
+      position: absolute;
+    }
+
+    .slide_black::before {
+      content: '';
+      display: block;
+      width: 210px;
+      /* background-color: red; */
+      border-top: 1px solid black;
+      transform: rotate(-45deg);
+      top: 0;
+      left: -33px;
+      position: absolute;
+    }
+
+    .slide_red {
+      position: relative;
+    }
+
+    .slide_red::after {
+      content: '';
+      display: block;
+      width: 210px;
+      /* background-color: red; */
+      border-top: 1px solid black;
+      transform: rotate(45deg);
+      bottom: 0;
+      left: -33px;
+      position: absolute;
+    }
+
+    .slide_red::before {
+      content: '';
+      display: block;
+      width: 215px;
+      /* background-color: red; */
+      border-top: 1px solid black;
+      transform: rotate(-45deg);
+      bottom: -3px;
+      left: -35px;
+      position: absolute;
+    }
+
+    /* 中間 */
+
+
+    .river {
+      height: 14%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-left: 1px solid black;
+      border-right: 1px solid black;
+    }
+
+    .text {
+      width: 50%;
+      /* background-color: lightsalmon; */
+      text-align: center;
+      font-size: 3rem;
+      letter-spacing: 1rem;
+    }
+
+    /* 棋子定位 */
+    /* 黑色棋子 */
+    .chess_black {
+      color: black;
+      text-align: center;
+      line-height: 60px;
+      font-size: 2.5rem;
+    }
+
+    /* 黑色第一排 */
+    .chess_black .row:first-child .col {
+      position: relative;
+    }
+
+    .chess_black .row:first-child .col::before {
+      content: '';
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: white;
+      border-radius: 50%;
+      border: 1px solid black;
+      top: -30px;
+      left: -30px;
+      z-index: 1;
+    }
+
+    .chess_black .row:first-child .col:last-child::after {
+      content: '車';
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: white;
+      border-radius: 50%;
+      border: 1px solid black;
+      top: -30px;
+      right: -30px;
+      z-index: 1;
+    }
+
+    /* 黑色第三排 */
+    .chess_black .row:nth-child(3) .col {
+      position: relative;
+    }
+
+    .chess_black .row:nth-child(3) .col:nth-child(6n+2):before {
+      content: '包';
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: white;
+      border-radius: 50%;
+      border: 1px solid black;
+      top: -30px;
+      left: -30px;
+      z-index: 1;
+    }
+
+    /* 黑色第四排 */
+    .chess_black .row:nth-child(4) .col {
+      position: relative;
+    }
+
+    .chess_black .row:nth-child(4) .col:nth-child(2n+1)::before {
+      content: '卒';
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: white;
+      border-radius: 50%;
+      border: 1px solid black;
+      top: -30px;
+      left: -30px;
+      z-index: 1;
+    }
+
+    .chess_black .row:nth-child(4) .col:last-child::after {
+      content: '卒';
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: white;
+      border-radius: 50%;
+      border: 1px solid black;
+      top: -30px;
+      right: -30px;
+      z-index: 1;
+    }
+
+    /* 紅色旗子 */
+    .chess_red {
+      color: red;
+      text-align: center;
+      line-height: 60px;
+      font-size: 2.5rem;
+    }
+
+    /* 紅色最後一排 */
+    .chess_red .row:last-child .col {
+      position: relative;
+    }
+
+    .chess_red .row:last-child .col::before {
+      content: '';
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: white;
+      border-radius: 50%;
+      border: 1px solid black;
+      bottom: -30px;
+      left: -30px;
+      z-index: 1;
+    }
+
+    .chess_red .row:last-child .col:last-child::after {
+      content: '俥';
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: white;
+      border-radius: 50%;
+      border: 1px solid black;
+      bottom: -30px;
+      right: -30px;
+      z-index: 1;
+    }
+
+    /* 紅色第二排 */
+    .chess_red .row:nth-child(3) .col {
+      position: relative;
+    }
+
+    .chess_red .row:nth-child(3) .col:nth-child(6n+2):before {
+      content: '炮';
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: white;
+      border-radius: 50%;
+      border: 1px solid black;
+      top: -30px;
+      left: -30px;
+      z-index: 1;
+    }
+
+    /* 紅色第一排 */
+    .chess_red .row:nth-child(2) .col {
+      position: relative;
+    }
+
+    .chess_red .row:nth-child(2) .col:nth-child(2n+1)::before {
+      content: '兵';
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: white;
+      border-radius: 50%;
+      border: 1px solid black;
+      top: -30px;
+      left: -30px;
+      z-index: 1;
+
+    }
+
+    .chess_red .row:nth-child(2) .col:last-child::after {
+      content: '兵';
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: white;
+      border-radius: 50%;
+      border: 1px solid black;
+      top: -30px;
+      right: -30px;
+      z-index: 1;
+      text-align: center;
+      line-height: 60px;
+      font-size: 2.5rem;
+    }
+
+    /* 象棋剩下的字 */
+    .chess_black .row:first-child .col:first-child::before {
+      content: '車';
+    }
+
+    .chess_black .row:first-child .col:nth-child(6n+2)::before {
+      content: '馬';
+    }
+
+    .chess_black .row:first-child .col:nth-child(4n+3)::before {
+      content: '象';
+    }
+
+    .chess_black .row:first-child .col:nth-child(4):before,
+    .chess_black .row:first-child .col:nth-child(6):before {
+      content: '士';
+    }
+
+    .chess_black .row:first-child .col:nth-child(5)::before {
+      content: '將';
+    }
+
+    .chess_red .row:last-child .col:first-child::before {
+      content: '俥';
+    }
+
+    .chess_red .row:last-child .col:nth-child(6n+2)::before {
+      content: '傌';
+    }
+
+    .chess_red .row:last-child .col:nth-child(4n+3)::before {
+      content: '相';
+    }
+
+    .chess_red .row:last-child .col:nth-child(4):before,
+    .chess_red .row:last-child .col:nth-child(6):before {
+      content: '仕';
+    }
+
+    .chess_red .row:last-child .col:nth-child(5)::before {
+      content: '帥';
+    }
+
+    /* 左右兩邊的字體 */
+    .txt {
+      writing-mode: vertical-lr;
+      font-size: 2.2rem;
+      letter-spacing: .3rem;
+      width: 100px;
+      line-height: 100px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="txt">棋盤裡，車無輪，馬無疆，叫聲將軍提防提防</div>
+  <div class="container">
+    <div class="wrap">
+      <div class="chess_black chess">
+        <div class="row">
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+        </div>
+        <div class="row">
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col slide_black"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+        </div>
+        <div class="row">
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+        </div>
+        <div class="row">
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+        </div>
+      </div>
+      <div class="chess_river river">
+        <div class="text">楚河</div>
+        <div class="text">漢界</div>
+      </div>
+      <div class="chess_red chess">
+        <div class="row">
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+        </div>
+        <div class="row">
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+        </div>
+        <div class="row">
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col slide_red"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+        </div>
+        <div class="row">
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="txt">圖畫裡，龍不吟，虎不嘯，小小書僮可笑可笑</div>
+</body>
+
+</html>
